@@ -19,14 +19,14 @@ workspace "onewknd"
 	outputdir = "/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 	-- Include directories relative to root folder (solution directory)
-	--[[
+
 	IncludeDir = {}
-	IncludeDir["GLFW"] = "../efgl/vendor/GLFW/include"
+	--[[IncludeDir["GLFW"] = "../efgl/vendor/GLFW/include"
 	IncludeDir["Glad"] = "../efgl/vendor/Glad/include"
-	IncludeDir["stb"]  = "../efgl/vendor/stb"
-	IncludeDir["glm"]  = "../efgl/vendor/glm"
-	IncludeDir["spdlog"] = "../efgl/vendor/spdlog/include"
-	--]]
+	IncludeDir["stb"]  = "../efgl/vendor/stb"--]]
+	IncludeDir["glm"]  = "./vendor/glm"
+	-- IncludeDir["spdlog"] = "../efgl/vendor/spdlog/include"
+
 	--[[
 	group "Dependencies"
 		include "../efgl/vendor/GLFW"
@@ -39,12 +39,12 @@ workspace "onewknd"
 		cppdialect "C++17"
 		staticruntime "on"
 
-		targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
+		targetdir ("/bin/" .. outputdir .. "/%{prj.name}")
 		objdir ("/bin-int/" .. outputdir .. "/%{prj.name}")
 
 		files
 		{
-			"../%{prj.name}/src/**"
+			"/%{prj.name}/src/**"
 		}
 
 		includedirs
@@ -53,11 +53,10 @@ workspace "onewknd"
 			"/vendor",
 			--[[
 			"%{IncludeDir.GLFW}",
-			"%{IncludeDir.Glad}",
+			"%{IncludeDir.Glad}",--]]
 			"%{IncludeDir.glm}",
-			"%{IncludeDir.stb}",
-			"%{IncludeDir.spdlog}"
-			--]]
+			--[["%{IncludeDir.stb}",
+			"%{IncludeDir.spdlog}"--]]
 		}
 		--[[
 		links
