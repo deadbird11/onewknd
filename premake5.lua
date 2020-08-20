@@ -33,7 +33,7 @@ workspace "onewknd"
 		include "../efgl/vendor/Glad"
 	--]]
 	project "onewknd"
-		location "../onewknd/%{prj.name}"
+		location "%{prj.name}/"
 		kind "ConsoleApp"
 		language "C++"
 		cppdialect "C++17"
@@ -44,12 +44,12 @@ workspace "onewknd"
 
 		files
 		{
-			"/%{prj.name}/src/**"
+			"%{prj.name}/src/**"
 		}
 
 		includedirs
 		{
-			"/%{prj.name}/src",
+			"%{prj.name}/src",
 			"/vendor",
 			--[[
 			"%{IncludeDir.GLFW}",
