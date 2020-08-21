@@ -11,10 +11,11 @@ bool Sphere::Hit(const Ray& r, float tMin, float tMax, HitRecord& rec) const {
 		float root = glm::sqrt(discriminant);
 
 		auto setRecord = [&rec, this, &r](float temp) {
-			rec.t = temp;
-			rec.p = r.at(rec.t);
-			glm::vec3 outwardNormal{ (rec.p - Center) / Radius };
+			rec.T = temp;
+			rec.P = r.At(rec.T);
+			glm::vec3 outwardNormal{ (rec.P - Center) / Radius };
 			rec.SetFaceNormal(r, outwardNormal);
+			rec.p_Material = p_Material;
 		};
 
 		float temp = (-halfB - root) / a;

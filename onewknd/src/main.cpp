@@ -4,11 +4,14 @@
 #include "HittableList.h"
 #include "prim/Sphere.h"
 #include "Camera.h"
+#include "Materials.h"
 
 #include <iostream>
 #include <fstream>
+#include <chrono>
 
 using namespace std;
+using namespace chrono;
 
 void writeColor(ostream& out, color pixelColor, unsigned int samplesPerPixel) {
 
@@ -17,9 +20,10 @@ void writeColor(ostream& out, color pixelColor, unsigned int samplesPerPixel) {
 	float b = pixelColor.z;
 
 	float scale = 1.0f / samplesPerPixel;
-	r *= scale;
-	g *= scale;
-	b *= scale;
+	// for gamma = 0.5f
+	r = glm::sqrt(scale * r);
+	g = glm::sqrt(scale * g);
+	b = glm::sqrt(scale * b);
 
 	out << static_cast<int>(255.999 * glm::clamp(r, 0.0f, 0.9999f)) << ' '
 		<< static_cast<int>(255.999 * glm::clamp(g, 0.0f, 0.9999f)) << ' '
@@ -31,9 +35,12 @@ color rayColor(const Ray& r, const IHittable& hittable, int depth) {
 	if (depth <= 0) return color(0.0f);
 
 	HitRecord rec;
-	if (hittable.Hit(r, 0, infinity, rec)) {
-		point3 target = rec.p + rec.normal + randomInUnitSphere();
-		return 0.5f * rayColor(Ray(rec.p, target - rec.p), hittable, depth - 1);
+	if (hittable.Hit(r, 0.001f, infinity, rec)) {
+		Ray scattered;
+		color attenuation;
+		if (rec.p_Material->Scatter(r, rec, attenuation, scattered)) {
+			return attenuation * rayColor(scattered, hittable, depth - 1);
+		}
 	}
 	glm::vec3 unitDir = glm::normalize(r.Dir);
 	float t = 0.5f * (unitDir.y + 1.0f);
@@ -41,6 +48,9 @@ color rayColor(const Ray& r, const IHittable& hittable, int depth) {
 }
 
 int main(int argc, char** argv) {
+
+	auto start = high_resolution_clock::now();
+
 	// Image Dimensions
 	const int IMAGE_WIDTH = 400;
 	const int IMAGE_HEIGHT = static_cast<int>(IMAGE_WIDTH / ASPECT_RATIO);
@@ -48,8 +58,16 @@ int main(int argc, char** argv) {
 
 	// World
 	HittableList scene;
-	scene.Add(MakeRef<Sphere>(point3(0, 0, -1), 0.5f));
-	scene.Add(MakeRef<Sphere>(point3(0.0f, -100.5f, -1.0f), 100));
+	
+	auto groundMat = MakeRef<Lambertian>(color(0.8f, 0.8f, 0.0f));
+	auto centerMat = MakeRef<Lambertian>(color(0.7f, 0.3f, 0.3f));
+	auto leftMat   = MakeRef<Metal>(color(0.8f));
+	auto rightMat  = MakeRef<Metal>(color(0.8f, 0.6f, 0.2f));
+
+	scene.Add(MakeRef<Sphere>(point3( 0.0f, -100.5f, -1.0f),  100.0f, groundMat));
+	scene.Add(MakeRef<Sphere>(point3( 0.0f,    0.0f, -1.0f),    0.5f, centerMat));
+	scene.Add(MakeRef<Sphere>(point3(-1.0f,    0.0f, -1.0f),    0.5f, leftMat));
+	scene.Add(MakeRef<Sphere>(point3( 1.0f,    0.0f, -1.0f),    0.5f, rightMat));
 
 	// Camera
 	Camera cam;
@@ -79,4 +97,9 @@ int main(int argc, char** argv) {
 	cerr << endl <<  "Done." << endl;
 
 	output.close();
+
+	auto stop = high_resolution_clock::now();
+	auto duration = duration_cast<seconds>(stop - start);
+
+	cerr << "Image took " << duration.count() << " seconds to generate." << endl;
 }

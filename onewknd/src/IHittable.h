@@ -1,16 +1,20 @@
 #pragma once
 #include "common.h"
 #include "Ray.h"
+#include "IMaterial.h"
+
+class IMaterial;
 
 struct HitRecord {
-	point3 p;
-	glm::vec3 normal;
-	float t;
-	bool frontFace;
+	point3 P;
+	glm::vec3 Normal;
+	Ref<IMaterial> p_Material;
+	float T;
+	bool FrontFace;
 
 	inline void SetFaceNormal(const Ray& r, const glm::vec3 outwardNormal) {
-		frontFace = glm::dot(r.Dir, outwardNormal) < 0;
-		normal = frontFace ? outwardNormal : -outwardNormal;
+		FrontFace = glm::dot(r.Dir, outwardNormal) < 0;
+		Normal = FrontFace ? outwardNormal : -outwardNormal;
 	}
 };
 

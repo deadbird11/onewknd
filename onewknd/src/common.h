@@ -17,5 +17,3 @@ constexpr Ref<T> MakeRef(Args&&... args) {
 }
 
 const float infinity = std::numeric_limits<float>::infinity();
-
-glm::vec3 randomInUnitSphere();

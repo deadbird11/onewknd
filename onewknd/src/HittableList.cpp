@@ -11,7 +11,7 @@ bool HittableList::Hit(const Ray& r, float tMin, float tMax, HitRecord& rec) con
 	for (const auto& object : objects) {
 		if (object->Hit(r, tMin, closestT, tempRec)) {
 			hitAnything = true;
-			closestT = tempRec.t;
+			closestT = tempRec.T;
 			rec = tempRec;
 		}
 	}
