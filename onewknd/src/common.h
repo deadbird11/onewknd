@@ -3,6 +3,7 @@
 #include <glm/gtx/norm.hpp>
 #include <memory>
 #include <limits>
+#include "util/Random.h"
 
 using color = glm::vec3;
 using point3 = glm::vec3;
@@ -16,3 +17,5 @@ constexpr Ref<T> MakeRef(Args&&... args) {
 }
 
 const float infinity = std::numeric_limits<float>::infinity();
+
+glm::vec3 randomInUnitSphere();
