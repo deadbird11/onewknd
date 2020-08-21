@@ -4,7 +4,6 @@
 #include "HittableList.h"
 #include "prim/Sphere.h"
 #include "Camera.h"
-#include "util/Random.h"
 
 #include <iostream>
 #include <fstream>
@@ -27,10 +26,14 @@ void writeColor(ostream& out, color pixelColor, unsigned int samplesPerPixel) {
 		<< static_cast<int>(255.999 * glm::clamp(b, 0.0f, 0.9999f)) << '\n';
 }
 
-color rayColor(const Ray& r, const IHittable& hittable) {
+color rayColor(const Ray& r, const IHittable& hittable, int depth) {
+	
+	if (depth <= 0) return color(0.0f);
+
 	HitRecord rec;
 	if (hittable.Hit(r, 0, infinity, rec)) {
-		return 0.5f * (rec.normal + color(1, 1, 1));
+		point3 target = rec.p + rec.normal + randomInUnitSphere();
+		return 0.5f * rayColor(Ray(rec.p, target - rec.p), hittable, depth - 1);
 	}
 	glm::vec3 unitDir = glm::normalize(r.Dir);
 	float t = 0.5f * (unitDir.y + 1.0f);
@@ -52,11 +55,12 @@ int main(int argc, char** argv) {
 	Camera cam;
 
 	// Rendering
-
 	ofstream output("output.ppm");
 
 	output << "P3" << endl << IMAGE_WIDTH << ' ' 
 		 << IMAGE_HEIGHT << endl << 255 << endl;
+
+	const int MAX_DEPTH = 50;
 
 	for (int j = IMAGE_HEIGHT - 1; j >= 0; --j) {
 		cerr << "Scanlines remaining: " << j << ' ' << flush << endl;
@@ -66,7 +70,7 @@ int main(int argc, char** argv) {
 				float u = (i + Random::GetRandomInRange<float>(0.0f, 0.9999f)) / (IMAGE_WIDTH - 1);
 				float v = (j + Random::GetRandomInRange<float>(0.0f, 0.9999f)) / (IMAGE_HEIGHT - 1);
 				Ray r = cam.GetRay(u, v);
-				pixel += rayColor(r, scene);
+				pixel += rayColor(r, scene, MAX_DEPTH);
 			}
 			writeColor(output, pixel, SAMPLES_PER_PIXEL);
 		}
