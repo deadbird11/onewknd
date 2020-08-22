@@ -27,6 +27,15 @@ public:
 
 public:
 	color Albedo;
-private:
-	static glm::vec3 reflect(const glm::vec3& in, const glm::vec3& normal);
+};
+
+class Dialectric : public IMaterial {
+public:
+	Dialectric(float ri) : RefIdx(ri) {}
+
+	virtual bool Scatter(const Ray& in, const HitRecord& rec, color& attenuation, Ray& scattered)
+		const override;
+
+public:
+	float RefIdx;
 };
