@@ -53,24 +53,27 @@ int main(int argc, char** argv) {
 
 	// Image Dimensions
 	const int IMAGE_WIDTH = 400;
+	const float ASPECT_RATIO = 16.0f / 9.0f;
 	const int IMAGE_HEIGHT = static_cast<int>(IMAGE_WIDTH / ASPECT_RATIO);
 	const int SAMPLES_PER_PIXEL = 100;
 
 	// World
 	HittableList scene;
+
 	
 	auto groundMat = MakeRef<Lambertian>(color(0.8f, 0.8f, 0.0f));
-	auto centerMat = MakeRef<Lambertian>(color(0.7f, 0.3f, 0.3f));
-	auto leftMat   = MakeRef<Metal>(color(0.8f));
+	auto centerMat = MakeRef<Lambertian>(color(0.1f, 0.2f, 0.5f));
+	auto leftMat   = MakeRef<Dialectric>(1.5f);
 	auto rightMat  = MakeRef<Metal>(color(0.8f, 0.6f, 0.2f));
 
 	scene.Add(MakeRef<Sphere>(point3( 0.0f, -100.5f, -1.0f),  100.0f, groundMat));
 	scene.Add(MakeRef<Sphere>(point3( 0.0f,    0.0f, -1.0f),    0.5f, centerMat));
 	scene.Add(MakeRef<Sphere>(point3(-1.0f,    0.0f, -1.0f),    0.5f, leftMat));
+	scene.Add(MakeRef<Sphere>(point3(-1.0f,    0.0f, -1.0f),   -0.45f, leftMat));
 	scene.Add(MakeRef<Sphere>(point3( 1.0f,    0.0f, -1.0f),    0.5f, rightMat));
 
 	// Camera
-	Camera cam;
+	Camera cam(point3(0,02, 1), point3(0, 0, -1), glm::vec3(0, 1, 0), 40, ASPECT_RATIO);
 
 	// Rendering
 	ofstream output("output.ppm");
