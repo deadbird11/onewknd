@@ -17,3 +17,7 @@ constexpr Ref<T> MakeRef(Args&&... args) {
 }
 
 const float infinity = std::numeric_limits<float>::infinity();
+
+glm::vec3 reflect(const glm::vec3& in, const glm::vec3& normal);
+glm::vec3 refract(const glm::vec3& uv, const glm::vec3& normal, float etaiOverEtat);
+float schlick(float cosine, float refIdx);
